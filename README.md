@@ -6,38 +6,47 @@ AWS Workshop
 
 
 Qiime2 Code
-​
+
+
 source activate qiime2-2019.7
-​
+
+
 qiime tools import --type SampleData[PairedEndSequencesWithQuality] --input-path Manifest.csv --output-path paired-end.qza —input-format PairedEndFastqManifestPhred33
-​
+
+
 qiime demux summarize --i-data paired-end.qza --o-visualization paired-end.qzv
-​
+
+
 qiime dada2 denoise-paired --i-demultiplexed-seqs paired-end.qza --o-table table.qza --o-representative-sequences rep-seqs.qza --p-trim-left-f 8 --p-trim-left-r 9 --p-trunc-len-f 150 --p-trunc-len-r 150 --p-n-threads 0 --o-denoising-stats denoisingstats.qza
-​
+
+
 qiime metadata tabulate --m-input-file denoisingstats.qza  --o-visualization stats-dada2.qzv
-​
+
+
 qiime feature-table summarize --i-table table.qza --o-visualization table.qzv  --m-sample-metadata-file Map.tsv
 
 qiime feature-table tabulate-seqs  --i-data rep-seqs.qza  --o-visualization rep-seqs.qzv
-​
-​
+
+
 qiime feature-classifier classify-sklearn  --i-classifier classifier.qza  --i-reads rep-seqs.qza --o-classification taxonomyV3V5.qza --p-n-jobs -1 --p-confidence .8
 
 qiime metadata tabulate  --m-input-file taxonomyV3V5.qza  --o-visualization taxonomyV3V5.qzv
-​
+
+
 qiime phylogeny align-to-tree-mafft-fasttree --i-sequences rep-seqs.qza --o-alignment aligned-rep-seqs.qza --o-masked-alignment masked-aligned-rep-seqs.qza --o-tree unrooted-tree.qza --o-rooted-tree rooted-tree.qza
-​
+
+
 qiime diversity core-metrics-phylogenetic  --i-phylogeny rooted-tree.qza  --i-table table.qza  --p-sampling-depth 723  --m-metadata-file Map.tsv  --output-dir core-metrics-results
-​
+
+
 qiime diversity alpha-group-significance  --i-alpha-diversity ./core-metrics-results/evenness_vector.qza  --m-metadata-file ./Map.tsv  --o-visualization ./core-metrics-results/evenness_statistics.qzv
-​
-​
+
+
 qiime tools export --input-path taxonomy.qza   --output-path exported
 qiime tools export --input-path table.qza   --output-path exported
 biom convert –i feature-table.biom -o table.tsv --to-tsv
-​
-​
+
+
 Phyloseq Code
 
 install.packages("devtools")
